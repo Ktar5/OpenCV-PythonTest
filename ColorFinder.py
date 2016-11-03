@@ -2,6 +2,9 @@ import cv2
 import numpy as np
 
 cap = cv2.VideoCapture(0)
+red = (0, 0, 255)
+green = (0, 255, 0)
+blue = (255, 0, 0)
 
 while (1):
 
@@ -32,12 +35,22 @@ while (1):
     #Find contours
     im2, contours, hierarchy = cv2.findContours(edges, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
+
+    finalTargets = []
     # Find the index of the largest contour, if any
     threshold_area = 100
     if len(contours) > 0:
         areas = [cv2.contourArea(c) for c in contours]
         max_index = np.argmax(areas)
         cnt = contours[max_index]
+        hull = cv2.convexHull(cnt)
+        perim = cv2.arcLength(hull, True)
+        if perim >= 5:
+            aproxHull = cv2.approxPolyDP(hull, 0.1 * perim, True)
+            if len(aproxHull) == 4:
+                finalTargets.append(aproxHull)
+        cv2.drawContours(frame, finalTargets, -1, green, 3)
+        """
         if cv2.contourArea(cnt) > threshold_area:
             #cv2.drawContours(frame, cnt, -1, (0, 255, 0), 3)
             rect = cv2.minAreaRect(cnt)
