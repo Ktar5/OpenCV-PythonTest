@@ -1,5 +1,6 @@
 import cv2
 import numpy as np
+import imutils
 
 cap = cv2.VideoCapture(0)
 red = (0, 0, 255)
@@ -50,6 +51,13 @@ while (1):
             if len(aproxHull) == 4:
                 finalTargets.append(aproxHull)
         cv2.drawContours(frame, finalTargets, -1, green, 3)
+        M = cv2.moments(cnt)
+
+        cX = int(M["m10"] / M["m00"])
+        cY = int(M["m01"] / M["m00"])
+        cv2.circle(frame, (cX, cY), 7, (255, 255, 255), -1)
+        cv2.putText(frame, "center", (cX - 20, cY - 20),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
         """
         if cv2.contourArea(cnt) > threshold_area:
             #cv2.drawContours(frame, cnt, -1, (0, 255, 0), 3)
